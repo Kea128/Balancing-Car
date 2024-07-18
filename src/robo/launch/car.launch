@@ -9,8 +9,7 @@
     <rosparam command="load" file="$(find robo)/config/wheels.yaml" ns="wheels_controller" />
 
     <!-- The controller is responsible for managing the joint status of the robot -->
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" 
-        args="joint_state_controller
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" args="joint_state_controller
                 wheels_controller"/>
 
     <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" output="screen" />
