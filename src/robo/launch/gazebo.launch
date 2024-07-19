@@ -1,9 +1,9 @@
 <launch>
 
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
-  <arg name="paused" default="false"/>
+  <arg name="paused" default="true"/>
   <arg name="use_sim_time" default="true"/>
-  <arg name="gui" default="true"/>
+  <arg name="guii" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
   <arg name="model" default="$(find robo)/urdf/car.xacro"/>
@@ -12,7 +12,7 @@
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find robo)/worlds/slope.world"/>
     <arg name="debug" value="$(arg debug)" />
-    <arg name="gui" value="$(arg gui)" />
+    <arg name="gui" value="$(arg guii)" />
     <arg name="paused" value="$(arg paused)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="headless" value="$(arg headless)"/>
@@ -21,11 +21,30 @@
   <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
 
   <!-- push robot_description to factory and spawn robot in gazebo -->
-  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
-        args="-z 0.3 -unpause -urdf -model robot -param robot_description" respawn="false" output="screen" />
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" args="-z 1 -urdf -model robot -param robot_description" respawn="false" output="screen" />
 
-  <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher">
+  <!-- name="urdf_spawner" 设置节点名称。 pkg="gazebo_ros" 指定节点所在的功能包。 type="spawn_model" 指定节点类型（可执行文件）。
+  args 传递给节点的参数：
+    -z 1：设置机器人生成位置的高度。
+    -后面可以跟unpause：在生成机器人后取消暂停模拟。
+    -urdf：指定生成的模型是 URDF 格式。
+    -model robot：设置生成模型的名称为 robot。
+    -param robot_description：使用参数服务器中的 robot_description 参数来获取 URDF。 -->
+
+
+
+  <!-- 包含rviz的launch文件 -->
+  <include file="$(find robo)/launch/rviz.launch" />
+  <!-- 即调用了以下注释文件 -->
+  <!-- 同时启动rviz -->
+  <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find robo)/config/show_rviz.rviz" /> -->
+  <!-- 机器人状态发布节点 -->
+  <!-- <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="50.0" />
-  </node>
+  </node> -->
+  <!-- 关节状态发布节点 -->
+  <!-- <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
+    <param name="publish_frequency" type="double" value="50.0" />
+  </node> -->
 
 </launch>

@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 
-<robot name="balancing_robot" xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name="balancing_robot"
+    xmlns:xacro="http://ros.org/wiki/xacro">
 
+
+    <xacro:property name="pi" value="3.1415926"/>
     <xacro:property name="base_link_length" value="0.4"/>
     <xacro:property name="base_link_radius" value="0.01"/>
     <xacro:property name="wheel_radius" value="0.1"/>
@@ -13,31 +16,60 @@
     <xacro:property name="UAV_y" value="0.4"/>
     <xacro:property name="UAV_z" value="0.05"/>
 
-    <material name="gray">
-        <color rgba="0.5 0.5 0.5 1.0"/>
+    <material name="red">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+    </material>
+    <material name="green">
+        <color rgba="0.0 1.0 0.0 1.0"/>
     </material>
     <material name="blue">
-        <color rgba="0.0 0.0 0.8 1.0"/>
+        <color rgba="0.0 0.0 1.0 1.0"/>
+    </material>
+    <material name="yellow">
+        <color rgba="1.0 1.0 0.0 1.0"/>
+    </material>
+    <material name="cyan">
+        <color rgba="0.0 1.0 1.0 1.0"/>
+    </material>
+    <material name="orange">
+        <color rgba="1.0 0.5 0.0 1.0"/>
+    </material>
+    <material name="purple">
+        <color rgba="0.5 0.0 0.5 1.0"/>
     </material>
 
 
     <!-- Virtual linkage, as specifying inertia on the base_link is not supported -->
-    <link name="dummy_link"/>
+    <link name="dummy_link">
+        <visual>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+            <!-- <material name="dummy_link_color">
+                <color rgba="0.5 0.2 0.5 1" />
+            </material> -->
+            <!-- 这里是rviz显示的颜色 -->
+            <material name="red"/>
+        </visual>
+    </link>
+    <gazebo reference="dummy_link">
+        <material>Gazebo/Red</material>
+    </gazebo>
 
 
     <link name="base_link">
         <visual>
-            <origin rpy="1.5707 0 0"/>
             <geometry>
                 <cylinder radius="${base_link_radius}" length="${base_link_length}"/>
             </geometry>
-            <material name="gray"/>
+            <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+            <material name="yellow"/>
         </visual>
         <collision>
-            <origin rpy="1.5707 0 0"/>
             <geometry>
                 <cylinder radius="${base_link_radius}" length="${base_link_length}"/>
             </geometry>
+            <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
         </collision>
         <inertial>
             <mass value="0.1"/>
@@ -45,25 +77,31 @@
         </inertial>
     </link>
 
+    <gazebo reference="base_link">
+        <material>Gazebo/Yellow</material>
+    </gazebo>
+
     <joint name="dummy_to_base" type="fixed">
         <parent link="dummy_link"/>
         <child link="base_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0" />
     </joint>
 
-    <xacro:macro name="wheel" params="param pos">
+
+    <xacro:macro name="wheel_func" params="direc pos">
         <link name="${pos}_wheel">
             <visual>
-                <origin xyz="0 0 0" rpy="1.5707 0 0"/>
                 <geometry>
                     <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
                 </geometry>
-                <material name="blue"/>
+                <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+                <material name="green"/>
             </visual>
             <collision>
-                <origin xyz="0 0 0" rpy="1.5707 0 0"/>
                 <geometry>
                     <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
                 </geometry>
+                <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
             </collision>
             <inertial>
                 <mass value="0.5"/>
@@ -74,14 +112,14 @@
         <joint name="base_to_${pos}_wheel" type="continuous">
             <parent link="base_link"/>
             <child link="${pos}_wheel"/>
-            <origin xyz="0 ${param * base_link_length/2} 0"/>
+            <origin xyz="0 ${direc * base_link_length/2} 0" rpy="0 0 0"/>
             <axis xyz="0 1 0"/>
         </joint>
 
         <gazebo reference="${pos}_wheel">
             <mu1 value="200"/>
             <mu2 value="100"/>
-            <material>Gazebo/Grey</material>
+            <material>Gazebo/Green</material>
         </gazebo>
 
         <transmission name="${pos}_wheel_trans">
@@ -95,23 +133,23 @@
         </transmission>
     </xacro:macro>
 
-    <xacro:wheel param="1" pos="left"/>
-    <xacro:wheel param="-1" pos="right"/>
+    <xacro:wheel_func direc="1" pos="left"/>
+    <xacro:wheel_func direc="-1" pos="right"/>
 
 
     <link name="support">
         <visual>
-            <origin xyz="0.0 0.0 0"/>
             <geometry>
                 <box size="${support_x} ${support_y} ${support_z}"/>
             </geometry>
-            <material name="gray"/>
+            <origin xyz="0 0 0"/>
+            <material name="blue"/>
         </visual>
         <collision>
-            <origin xyz="0.0 0.0 ${support_z/2}"/>
             <geometry>
                 <box size="${support_x} ${support_y} ${support_z}"/>
             </geometry>
+            <origin xyz="0 0 0"/>
         </collision>
         <inertial>
             <mass value="0.1"/>
@@ -119,13 +157,18 @@
         </inertial>
     </link>
 
+    <gazebo reference="support">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
     <joint name="base_to_support" type="fixed">
         <parent link="base_link"/>
         <child link="support"/>
-        <origin xyz="0.0 0.0 ${support_z/2}"/>
+        <origin xyz="0 0 ${support_z/2}" rpy="${pi/2} 0 0"/>
     </joint>
 
 
+    <!-- 
     <link name="UAV">
         <visual name="">
             <origin xyz="0.0 0.0 0"/>
@@ -148,7 +191,7 @@
 
     <joint name="UAV_to_support" type="fixed">
         <parent link="support"/>
-        <child link="UAV"/>      
+        <child link="UAV"/>
         <origin xyz="0.0 0.0 ${support_z/2}"/>
     </joint>
 
@@ -159,7 +202,7 @@
         </plugin>
     </gazebo>
 
-    
+
     <gazebo reference="support">
         <gravity>true</gravity>
         <sensor name="imu_sensor" type="imu">
@@ -178,7 +221,7 @@
             </plugin>
             <pose>0 0 0 0 0 0</pose>
         </sensor>
-    </gazebo>
+    </gazebo> -->
 
 </robot>
 
