@@ -37,13 +37,16 @@
     <material name="purple">
         <color rgba="0.5 0.0 0.5 1.0"/>
     </material>
+    <material name="white">
+        <color rgba="1 1 1 1.0"/>
+    </material>
 
 
     <!-- Virtual linkage, as specifying inertia on the base_link is not supported -->
     <link name="dummy_link">
         <visual>
             <geometry>
-                <sphere radius="0.05"/>
+                <sphere radius="0.01"/>
             </geometry>
             <!-- <material name="dummy_link_color">
                 <color rgba="0.5 0.2 0.5 1" />
@@ -117,8 +120,8 @@
         </joint>
 
         <gazebo reference="${pos}_wheel">
-            <mu1 value="200"/>
-            <mu2 value="100"/>
+            <mu1 value="2"/>
+            <mu2 value="1"/>
             <material>Gazebo/Green</material>
         </gazebo>
 
@@ -164,36 +167,39 @@
     <joint name="base_to_support" type="fixed">
         <parent link="base_link"/>
         <child link="support"/>
-        <origin xyz="0 0 ${support_z/2}" rpy="${pi/2} 0 0"/>
+        <origin xyz="0 0 ${support_z/2}" rpy="0 0 0"/>
     </joint>
 
 
-    <!-- 
     <link name="UAV">
         <visual name="">
-            <origin xyz="0.0 0.0 0"/>
             <geometry>
                 <box size="${UAV_x} ${UAV_y} ${UAV_z}"/>
             </geometry>
-            <material name="gray"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <material name="white"/>
         </visual>
         <collision>
-            <origin xyz="0.0 0.0 ${support_z}"/>
             <geometry>
                 <box size="${UAV_x} ${UAV_y} ${UAV_z}"/>
             </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
         </collision>
         <inertial>
             <mass value="4"/>
             <inertia ixx="0.05417" ixy="0.0" ixz="0.0" iyy="0.05417" iyz="0.0" izz="0.10667"/>
         </inertial>
     </link>
+    <gazebo reference="UAV">
+        <material>Gazebo/White</material>
+    </gazebo>
 
     <joint name="UAV_to_support" type="fixed">
         <parent link="support"/>
         <child link="UAV"/>
-        <origin xyz="0.0 0.0 ${support_z/2}"/>
+        <origin xyz="0 0 ${support_z/2}" rpy="0 0 0"/>
     </joint>
+
 
 
     <gazebo>
@@ -214,14 +220,14 @@
                 <topicName>imu/data</topicName>
                 <bodyName>body_link</bodyName>
                 <updateRateHZ>50.0</updateRateHZ>
-                <gaussianNoise>0.0</gaussianNoise>
+                <gaussianNoise>0</gaussianNoise>
                 <xyzOffset>0 0 0</xyzOffset>
                 <rpyOffset>0 0 0</rpyOffset>
                 <frameName>imu_link</frameName>
             </plugin>
-            <pose>0 0 0 0 0 0</pose>
+            <pose>1 0 0 0 0 0</pose>
         </sensor>
-    </gazebo> -->
+    </gazebo>
 
 </robot>
 
