@@ -1,4 +1,5 @@
 #include "balancing_car_control/control_param.h"
+#include "control_algorithm.h"
 #include "ros/ros.h"
 
 double outerLoopIntegralOutput;       // External loop integral output
@@ -14,8 +15,13 @@ double yawIntegralMinThre = -10;
 double yawMaxIntegral = 1;  // Integral limiting amplitude
 double yawMinIntegral = -1;
 
+control_algorithm::pid::PID outLoop;
+
 bool doPID(balancing_car_control::control_param::Request& req,
            balancing_car_control::control_param::Response& resp) {
+  static int countLoop = 0;  //内外环控制率
+  countLoop++;
+
   if (req.dst_vel == 0) {
     outerLoopIntegralOutput = 0;
   }
