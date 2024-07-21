@@ -87,7 +87,7 @@
     <joint name="dummy_to_base" type="fixed">
         <parent link="dummy_link"/>
         <child link="base_link"/>
-        <origin xyz="0 0 0" rpy="0 0 0" />
+        <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0" />
     </joint>
 
 
@@ -217,8 +217,7 @@
             <visualize>true</visualize>
             <topic>__default_topic__</topic>
             <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-                <topicName>imu/data</topicName>
-                <bodyName>body_link</bodyName>
+                <topicName>/imu/data</topicName>
                 <updateRateHZ>50.0</updateRateHZ>
                 <gaussianNoise>0</gaussianNoise>
                 <xyzOffset>0 0 0</xyzOffset>

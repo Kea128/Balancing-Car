@@ -10,6 +10,7 @@ double outerLoopMinIntegral = -1;
 double yawIntegralOutput;        // Steering loop integral output
 double yawIntegralMaxThre = 10;  // Integral separation threshold
 double yawIntegralMinThre = -10;
+
 double yawMaxIntegral = 1;  // Integral limiting amplitude
 double yawMinIntegral = -1;
 

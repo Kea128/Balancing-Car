@@ -12,8 +12,6 @@
     <node name="controller_spawner" pkg="controller_manager" type="spawner" args="joint_state_controller
                 wheels_controller"/>
 
-    <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" output="screen" />
-
     <node pkg="balancing_car_control" type="sensor" name="sensor" output="screen" />
     <node pkg="balancing_car_control" type="controller" name="controller" output="screen" />
 

@@ -36,7 +36,7 @@ void IMUCallback(sensor_msgs::Imu msg) {
   if (msg.orientation_covariance[0] < 0)
     return;  //检查 IMU 数据的有效性，若无效则返回
 
-  // Convert quaternions in message packets to quaternions in tf
+  // 将消息包中的四元数转换为 tf 中的四元数
   tf::Quaternion quaternion(msg.orientation.x, msg.orientation.y,
                             msg.orientation.z, msg.orientation.w);
 
@@ -64,12 +64,19 @@ void IMUCallback(sensor_msgs::Imu msg) {
 
   // Receive the calculated torque value and publish it
   if (flag) {
+    // 创建一个std_msgs::Float64MultiArray类型的消息，用于发布两个轮子的扭矩命令
     std_msgs::Float64MultiArray commandMsg;
+    // 为消息添加一个维度，这里只添加一个维度，用于存储两个扭矩值
     commandMsg.layout.dim.push_back(std_msgs::MultiArrayDimension());
+    // 这个维度的标签设置为空字符串，通常用于在消息中标识维度的名称
     commandMsg.layout.dim[0].label = "";
+    // 设置维度的大小为2，因为我们有两个扭矩值要存储
     commandMsg.layout.dim[0].size = 2;
+    // 步长设置为1，表示每个扭矩值之间占用一个数据项的空间
     commandMsg.layout.dim[0].stride = 1;
+    // 数据偏移量设置为0，表示数据从数组的第一个位置开始存储
     commandMsg.layout.data_offset = 0;
+    // 添加左轮的扭矩值到消息的数据数组中
     commandMsg.data.push_back(
         cp.response.leftTorque);  // Left wheel, driving the car forward when
                                   // the value is positive
@@ -88,20 +95,25 @@ int main(int argc, char** argv) {
   ros::init(argc, argv, "sensor");
   ros::NodeHandle nh;
 
+  // 创建控制消息客户端对象
   client =
       nh.serviceClient<balancing_car_control::control_param>("control_param");
   ros::service::waitForService("control_param");
 
   // Control the wheel output torque
+  // 创建关节力矩发布者对象
   wheelsCommandPub = nh.advertise<std_msgs::Float64MultiArray>(
       "/wheels_controller/command", 1);
 
+  // 创建关IMU订阅者对象
   ros::Subscriber imu_sub = nh.subscribe("/imu/data", 10, IMUCallback);
 
   // Subscription of speed information for two wheels for feedback control
+  // 创建关节状态订阅者对象
   ros::Subscriber wheelVelocity_sub = nh.subscribe<sensor_msgs::JointState>(
       "/joint_states", 10, WheelVelocityCallback);
 
+  // 创建键盘控制订阅者对象
   ros::Subscriber keyboard_cmd_sub =
       nh.subscribe<geometry_msgs::Twist>("/my_cmd_vel", 10, KeyboardCmd);
 
