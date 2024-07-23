@@ -15,8 +15,6 @@ double yawIntegralMinThre = -10;
 double yawMaxIntegral = 1;  // Integral limiting amplitude
 double yawMinIntegral = -1;
 
-control_algorithm::pid::PID outLoop;
-
 bool doPID(balancing_car_control::control_param::Request& req,
            balancing_car_control::control_param::Response& resp) {
   static int countLoop = 0;  //内外环控制率
